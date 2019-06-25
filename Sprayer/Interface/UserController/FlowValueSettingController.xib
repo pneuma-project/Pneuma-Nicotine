@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -13,6 +13,7 @@
             <connections>
                 <outlet property="k1ValueTF" destination="21Y-uf-5ds" id="l1G-dx-WVR"/>
                 <outlet property="k2ValueTF" destination="B7R-JW-aFz" id="rCs-bS-Xxu"/>
+                <outlet property="topLabelTop" destination="Cij-UY-6p8" id="m6Z-s1-B0Q"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -65,7 +66,7 @@
                     </connections>
                 </button>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Flow = k1 + k2 * (sqrt (pressure))" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yNu-s4-Af3">
-                    <rect key="frame" x="10" y="75" width="269.5" height="21"/>
+                    <rect key="frame" x="10" y="75" width="270" height="21"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="21" id="YA9-5x-AD0"/>
                     </constraints>
@@ -116,16 +117,38 @@
                         <action selector="restoreDefaultSettingAction:" destination="-1" eventType="touchUpInside" id="lkq-QH-AnE"/>
                     </connections>
                 </button>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QQ4-qi-Cbn">
+                    <rect key="frame" x="0.0" y="230" width="375" height="50"/>
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="K3: 0.09" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6sS-Qy-ACb">
+                            <rect key="frame" x="8" y="14.5" width="65" height="21"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="21" id="JRW-E4-3rE"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstItem="6sS-Qy-ACb" firstAttribute="centerY" secondItem="QQ4-qi-Cbn" secondAttribute="centerY" id="1D3-qy-maB"/>
+                        <constraint firstAttribute="height" constant="50" id="8XU-d6-6Vg"/>
+                        <constraint firstItem="6sS-Qy-ACb" firstAttribute="leading" secondItem="QQ4-qi-Cbn" secondAttribute="leading" constant="8" id="VIk-UC-lcw"/>
+                    </constraints>
+                </view>
             </subviews>
             <color key="backgroundColor" red="0.95294117647058818" green="0.97647058823529409" blue="0.9882352941176471" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="HcV-Jy-OEy" firstAttribute="top" secondItem="yNu-s4-Af3" secondAttribute="bottom" constant="18" id="1yK-Hz-S7C"/>
                 <constraint firstAttribute="trailing" secondItem="Aro-Zi-dVM" secondAttribute="trailing" id="2VB-2K-4E6"/>
+                <constraint firstAttribute="trailing" secondItem="QQ4-qi-Cbn" secondAttribute="trailing" id="899-Jr-Lcg"/>
                 <constraint firstItem="Hh9-Sg-XoD" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="45" id="8Sz-fx-Tyf"/>
                 <constraint firstItem="Hh9-Sg-XoD" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="8nH-T1-Phs"/>
                 <constraint firstItem="yNu-s4-Af3" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="10" id="AOo-FP-5VL"/>
                 <constraint firstItem="yNu-s4-Af3" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="75" id="Cij-UY-6p8"/>
                 <constraint firstAttribute="trailing" secondItem="HcV-Jy-OEy" secondAttribute="trailing" id="Gcd-HT-zf2"/>
+                <constraint firstItem="QQ4-qi-Cbn" firstAttribute="top" secondItem="Aro-Zi-dVM" secondAttribute="bottom" constant="8" id="GjI-58-r78"/>
                 <constraint firstAttribute="trailing" secondItem="Hh9-Sg-XoD" secondAttribute="trailing" constant="45" id="OcC-op-oFV"/>
                 <constraint firstItem="Aro-Zi-dVM" firstAttribute="top" secondItem="HcV-Jy-OEy" secondAttribute="bottom" constant="8" id="TnI-Rp-Zcq"/>
                 <constraint firstItem="S8k-EA-2OU" firstAttribute="top" secondItem="Hh9-Sg-XoD" secondAttribute="bottom" constant="15" id="X43-VO-j7T"/>
@@ -133,6 +156,7 @@
                 <constraint firstItem="Aro-Zi-dVM" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="q0c-wx-hn9"/>
                 <constraint firstItem="HcV-Jy-OEy" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="qNP-fz-ZMD"/>
                 <constraint firstAttribute="trailing" secondItem="S8k-EA-2OU" secondAttribute="trailing" constant="45" id="qmJ-q9-R3U"/>
+                <constraint firstItem="QQ4-qi-Cbn" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="rtk-uA-8Wr"/>
                 <constraint firstItem="S8k-EA-2OU" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="45" id="z41-Ru-moY"/>
             </constraints>
             <point key="canvasLocation" x="32.799999999999997" y="52.623688155922046"/>

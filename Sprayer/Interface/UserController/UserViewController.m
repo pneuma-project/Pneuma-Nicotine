@@ -14,6 +14,7 @@
 #import "AddPatientInfoModel.h"
 #import "FlowValueSettingController.h"
 #import "UserDefaultsUtils.h"
+#import "HistoryDetailViewController.h"
 
 @interface UserViewController ()
 {
@@ -37,8 +38,8 @@
     [self setNavTitle:@"My Profile"];
     [self createHeadView];
     
-    imageArr = @[@"my-profile-icon-patient-information",@"my-profile-icon-basic-information",@"my-profile-icon-history",@"my-profile-icon-FlowValue",@"my-profile-icon-basic-information"];
-    titleArr = @[@"Patient Information",@"Basic Information",@"History",@"Pressure VS Flow Rate Equation",@"Drug Information"];
+    imageArr = @[@"my-profile-icon-patient-information",@"my-profile-icon-basic-information",@"my-profile-icon-history",@"my-profile-icon-FlowValue"];
+    titleArr = @[@"Patient Information",@"Basic Information",@"History",@"Pressure VS Flow Rate Equation"];
     
 }
 -(void)viewWillAppear:(BOOL)animated
@@ -180,8 +181,11 @@
         [self.navigationController pushViewController:inforVC animated:YES];
         
     }else if (indexPath.row == 2){
-        UserListViewController *userListVC = [[UserListViewController alloc] init];
-        [self.navigationController pushViewController:userListVC animated:YES];
+        //检测用户是否存在
+        [self noUserAlert];
+        HistoryDetailViewController *historyVC = [[HistoryDetailViewController alloc] init];
+        historyVC.model = _addModel;
+        [self.navigationController pushViewController:historyVC animated:YES];
     }else if (indexPath.row == 3){
         FlowValueSettingController *FlowValueVC = [[FlowValueSettingController alloc]init];
         [self.navigationController pushViewController:FlowValueVC animated:YES];

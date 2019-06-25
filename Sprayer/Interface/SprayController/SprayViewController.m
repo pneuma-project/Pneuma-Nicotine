@@ -62,6 +62,9 @@
     self.view.backgroundColor = RGBColor(240, 248, 252, 1.0);
     [self setNavTitle:[DisplayUtils getTimestampData]];
     [self setInterface];
+    
+    self.timer = [NSTimer scheduledTimerWithTimeInterval:2.0f target:self selector:@selector(writeDataAction) userInfo:nil repeats:YES];
+    [self.timer setFireDate:[NSDate distantFuture]];
 }
 
 -(void)setInterface {
@@ -141,21 +144,21 @@
     }
     //查询到用户id后再调取该用户的最佳训练数据
     self.sprayDataArr = [NSMutableArray array];
-    NSArray * arr1 = [btDataStr componentsSeparatedByString:@","];
-    if (arr1.count == 0) {
-        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"" message:@"Please go to training" preferredStyle:UIAlertControllerStyleAlert];
-        UIAlertAction *alertAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            [[NSNotificationCenter defaultCenter]postNotificationName:@"gotoTrain" object:nil userInfo:nil];
-        }];
-        [alertController addAction:alertAction];
-        [self presentViewController:alertController animated:YES completion:nil];
-        return;
-    }
+//    NSArray * arr1 = [btDataStr componentsSeparatedByString:@","];
+//    if (arr1.count == 0) {
+//        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"" message:@"Please go to training" preferredStyle:UIAlertControllerStyleAlert];
+//        UIAlertAction *alertAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+//            [[NSNotificationCenter defaultCenter]postNotificationName:@"gotoTrain" object:nil userInfo:nil];
+//        }];
+//        [alertController addAction:alertAction];
+//        [self presentViewController:alertController animated:YES completion:nil];
+//        return;
+//    }
     
-    for (NSString * str in arr1) {
-        [self.sprayDataArr addObject:str];
-        allTrainTotalNum += [str intValue];
-    }
+//    for (NSString * str in arr1) {
+//        [self.sprayDataArr addObject:str];
+//        allTrainTotalNum += [str intValue];
+//    }
     //获取该用户的实时喷雾数据(50个为一组)
     NSArray * arr2 = [[SqliteUtils sharedManager] selectHistoryBTInfo];
     if (arr2.count == 0) {
@@ -251,16 +254,9 @@
         [self presentViewController:alertController animated:YES completion:nil];
     }else {
         for (AddPatientInfoModel * model in arr) {
-            if (model.isSelect == 1 && ![model.btData isEqualToString:@"(null)"]) {
+            if (model.isSelect == 1) {
                 [[NSNotificationCenter defaultCenter] postNotificationName:@"sparyModel" object:nil userInfo:nil];
-                self.timer = [NSTimer scheduledTimerWithTimeInterval:2.0f target:self selector:@selector(writeDataAction) userInfo:nil repeats:YES];
-            }else if (model.isSelect == 1 && [model.btData isEqualToString:@"(null)"]){
-                UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"" message:@"Please go to training" preferredStyle:UIAlertControllerStyleAlert];
-                UIAlertAction *alertAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                    [[NSNotificationCenter defaultCenter]postNotificationName:@"gotoTrain" object:nil userInfo:nil];
-                }];
-                [alertController addAction:alertAction];
-                [self presentViewController:alertController animated:YES completion:nil];
+                [self.timer setFireDate:[NSDate distantPast]];
             }
         }
     }
@@ -269,8 +265,7 @@
 -(void)viewDidDisappear:(BOOL)animated
 {
     [super viewDidDisappear:animated];
-    [self.timer invalidate];
-    self.timer = nil;
+    [self.timer setFireDate:[NSDate distantFuture]];
 }
 
 -(void)refreshViewAction
@@ -283,14 +278,12 @@
 
 -(void)disconnectAction
 {
-//    if (self.timer.isValid == YES) {
-//        [self.timer invalidate];
-//    }
+    [self.timer setFireDate:[NSDate distantFuture]];
 }
 
 -(void)stopNSTimerAction
 {
-    [self.timer invalidate];
+    [self.timer setFireDate:[NSDate distantFuture]];
 }
 
 -(void)writeDataAction
@@ -348,7 +341,7 @@
     for (UIView *subview in self.view.subviews) {
         [subview removeFromSuperview];
     }
-    _upBgView = [[UIView alloc]initWithFrame:CGRectMake(10, 74, screen_width-20, (screen_height-64-tabbarHeight)/2-20)];
+    _upBgView = [[UIView alloc]initWithFrame:CGRectMake(10, kSafeAreaTopHeight+10, screen_width-20, (screen_height-kSafeAreaTopHeight-kTabbarHeight)/2-20)];
     _upBgView.layer.cornerRadius = 3.0;
     _upBgView.backgroundColor = [UIColor whiteColor];
     
@@ -431,7 +424,7 @@
     [_upBgView addSubview:sprayLabel];
     [self.view addSubview:_upBgView];
     /*创建第二个柱状图 */
-    downBgView = [[UIView alloc]initWithFrame:CGRectMake(10, _upBgView.current_y_h+10, screen_width-20,(screen_height-64-tabbarHeight)/2-20)];
+    downBgView = [[UIView alloc]initWithFrame:CGRectMake(10, _upBgView.current_y_h+10, screen_width-20,(screen_height-kSafeAreaTopHeight-kTabbarHeight)/2-20)];
     downBgView.backgroundColor = [UIColor whiteColor];
     UIView * pointView = [[UIView alloc]initWithFrame:CGRectMake(10, 10, 8, 8)];
     pointView.backgroundColor = RGBColor(0, 83, 181, 1.0);

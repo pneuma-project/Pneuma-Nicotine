@@ -451,7 +451,6 @@ static NSString *Cell_TWO = @"cellTwo";
     vc.allTotalNum = allTotalNum;
     vc.allTrainTotalNum = allTrainTotalNum;
     vc.lastTrainNum = lastTrainNum;
-    vc.titles = date;
     vc.medicineNaStr = medicineN;
     vc.selectDateArr = selectDateArr;
     [self.navigationController pushViewController:vc animated:YES];

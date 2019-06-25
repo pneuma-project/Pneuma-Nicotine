@@ -31,7 +31,7 @@
         self.backgroundColor = [UIColor clearColor];
         self.unfillColor = RGBColor(131, 186, 250, 1.0);//画笔颜色
         self.centerfillColor = [UIColor whiteColor];//圆环中心填充色
-        self.number = @"0L";
+        self.number = @"0mg";
     }
     return self;
 }
@@ -44,7 +44,7 @@
     self.centerLable = [[UILabel alloc] initWithFrame:CGRectMake(20, center/3, center*2-40, center)];
     self.centerLable.textAlignment = NSTextAlignmentCenter;
     self.centerLable.numberOfLines = 2;
-    self.centerLable.text = @"Best Analog Inspiratory Volume";
+    self.centerLable.text = @"Total Nicotine";
     self.centerLable.backgroundColor = [UIColor clearColor];
     self.centerLable.textColor = RGBColor(8, 153, 239, 1.0);
     self.centerLable.font = [UIFont systemFontOfSize:14];
@@ -56,7 +56,7 @@
     self.scoreLabel.backgroundColor = [UIColor clearColor];
     self.scoreLabel.textColor = RGBColor(83, 170, 241, 1.0);
     self.scoreLabel.text = self.number;
-    self.scoreLabel.font = [UIFont systemFontOfSize:30];
+    self.scoreLabel.font = [UIFont systemFontOfSize:28];
     [self addSubview: self.scoreLabel];
     //self.contentMode = UIViewContentModeRedraw;
     [self addSubview: self.centerLable];

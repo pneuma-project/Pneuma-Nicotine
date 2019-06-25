@@ -7,7 +7,7 @@
 //
 
 #import "UserListViewController.h"
-#import "HistoryViewController.h"
+#import "HistoryDetailViewController.h"
 #import "SqliteUtils.h"
 #import "AddPatientInfoModel.h"
 @interface UserListViewController ()<CustemBBI>
@@ -88,7 +88,7 @@
     AddPatientInfoModel * model =self.dataArr[indexPath.row];
 
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    HistoryViewController *historyVC = [[HistoryViewController alloc] init];
+    HistoryDetailViewController *historyVC = [[HistoryDetailViewController alloc] init];
     historyVC.model = model;
     [self.navigationController pushViewController:historyVC animated:YES];
 }

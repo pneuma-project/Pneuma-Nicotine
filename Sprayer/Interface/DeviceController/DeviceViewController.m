@@ -29,6 +29,11 @@
 @property (nonatomic,strong)NSTimer *medicineInfoTimer;   //发送药品信息定时器
 
 @property(nonatomic,strong)BlueDeviceListView *blueView;  //蓝牙设备列表视图
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *topViewTop;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *deviceBtnbottom;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *deviceImgBottom;
+
+
 @end
 
 @implementation DeviceViewController
@@ -38,7 +43,8 @@
     // Do any additional setup after loading the view from its nib.
     self.view.backgroundColor = [UIColor whiteColor];
     [self setNavTitle:@"MY DEVICE"];
-    self.medicineInfoTimer = [NSTimer scheduledTimerWithTimeInterval:2.0f target:self selector:@selector(writeInquireMedicineInfo) userInfo:nil repeats:YES];
+    [self setLayoutConstraint];
+//    self.medicineInfoTimer = [NSTimer scheduledTimerWithTimeInterval:2.0f target:self selector:@selector(writeInquireMedicineInfo) userInfo:nil repeats:YES];
     self.timer = [NSTimer scheduledTimerWithTimeInterval:2.0f target:self selector:@selector(writePowerInfoDataAction) userInfo:nil repeats:YES];
     
     _blueView = [[BlueDeviceListView alloc] init];
@@ -51,17 +57,12 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(bleConnectSucceedAction) name:ConnectSucceed object:nil]; //设备连接成功扫描到特征值
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(disconnectAction) name:PeripheralDidConnect object:nil];//设备断开连接
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(displayMedicineInfoAction:) name:@"displayMedicineInfo" object:nil]; //展示药品信息
-//    if ([UserDefaultsUtils boolValueWithKey:@"AutoConnect"] == NO) {
 
-//    }
-    if ([UserDefaultsUtils boolValueWithKey:IsDisplayMedInfo] == NO) {
-        [self.timer setFireDate:[NSDate distantFuture]];
-        [self.medicineInfoTimer setFireDate:[NSDate distantPast]];
-    }else {
+    if ([UserDefaultsUtils boolValueWithKey:@"isConnect"] == YES) {
         [self.timer setFireDate:[NSDate distantPast]];
-        [self.medicineInfoTimer setFireDate:[NSDate distantFuture]];
+    }else {
+        [self.timer setFireDate:[NSDate distantFuture]];
     }
-    
 }
 
 -(void)viewDidAppear:(BOOL)animated
@@ -95,7 +96,12 @@
     [super viewDidDisappear:animated];
     NSLog(@"self = %@",self.timer);
     [self.timer setFireDate:[NSDate distantFuture]];
-    [self.medicineInfoTimer setFireDate:[NSDate distantFuture]];
+}
+
+-(void)setLayoutConstraint {
+    _topViewTop.constant = kSafeAreaTopHeight;
+    _deviceImgBottom.constant = kTabbarHeight;
+    _deviceBtnbottom.constant = 36.0+kTabbarHeight;
 }
 
 #pragma mark - 没有用户时的弹窗
@@ -132,32 +138,25 @@
 -(void)bleConnectSucceedAction
 {
     [self.isOnlineBtn setImage:[UIImage imageNamed:@"device-butn-on"] forState:UIControlStateNormal];
-    [self.medicineInfoTimer setFireDate:[NSDate distantPast]];
-    [self.timer setFireDate:[NSDate distantFuture]];
-    [UserDefaultsUtils saveBoolValue:NO withKey:IsDisplayMedInfo];
+    [self.timer setFireDate:[NSDate distantPast]];
 }
 
 //停止定时器发送上电信息
 -(void)stopNSTimerAction
 {
     [self.timer setFireDate:[NSDate distantFuture]];
-    [self.medicineInfoTimer setFireDate:[NSDate distantFuture]];
 }
 
 //蓝牙失去连接
 -(void)disconnectAction
 {
-    [UserDefaultsUtils saveBoolValue:NO withKey:IsDisplayMedInfo];
     [self.isOnlineBtn setImage:[UIImage imageNamed:@"device-butn-off"] forState:UIControlStateNormal];
     [self.timer setFireDate:[NSDate distantFuture]];
-    [self.medicineInfoTimer setFireDate:[NSDate distantFuture]];
 }
 
 //展示药品名称
 -(void)displayMedicineInfoAction:(NSNotification *)notification
 {
-    [UserDefaultsUtils saveBoolValue:YES withKey:IsDisplayMedInfo];
-    [self.medicineInfoTimer setFireDate:[NSDate distantFuture]];
     NSDictionary *infoDict = notification.object;
     NSString *medicineInfo = infoDict[@"medicineInfo"];
     [UserDefaultsUtils saveValue:medicineInfo forKey:@"MedicineInfo"];

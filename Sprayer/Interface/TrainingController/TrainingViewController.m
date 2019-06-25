@@ -8,32 +8,25 @@
 
 #import "TrainingViewController.h"
 #import "FL_ScaleCircle.h"
-#import "FLChartView.h"
 #import "TrainingStartViewController.h"
 #import "RetrainingViewController.h"
 #import "SqliteUtils.h"
 #import "AddPatientInfoModel.h"
 #import "UserDefaultsUtils.h"
+#import "BlueToothDataModel.h"
 
 @interface TrainingViewController ()
 {
     UIView *view;
     UIImageView *bgImageView;
-    
     UIView *footView;
-    UIView *circleView;
-    int allTrainNum;
-    float allTrain;
     
-    NSArray *dataArr;
-    
-    BOOL isTrain;
+    int userId;//当前用户ID
+    int pastNum;  //过去60min次数
 }
 
 @property (nonatomic,strong)FL_ScaleCircle *circleView;
-@property (nonatomic,strong)FLChartView *chartView;
-
-@property(nonatomic,strong)NSMutableArray * yNumArr;
+@property(nonatomic,strong)NSMutableArray * AllNumberArr;
 
 @end
 
@@ -41,9 +34,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
     self.view.backgroundColor = [UIColor whiteColor];
-    [self setNavTitle:@"Inspiratory Training"];
+    [self setNavTitle:[DisplayUtils getTimestampData]];
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -52,7 +44,7 @@
     for (UIView *subview in self.view.subviews) {
         [subview removeFromSuperview];
     }
-    [self selectFromDb];
+    [self selectDataFromDb];
     [self createHeadView];
     [self createFootView];
     self.tabBarController.tabBar.hidden = NO;
@@ -70,59 +62,47 @@
     self.navigationController.interactivePopGestureRecognizer.enabled=YES;
 }
 
--(void)selectFromDb
+-(void)selectDataFromDb
 {
-    //曲线图
-    allTrainNum = 0;
+    pastNum = 0;
+    //先查看是哪个用户登录并且调取他的最优数据
+    userId = 0;
     NSArray * arr = [[SqliteUtils sharedManager]selectUserInfo];
-    NSArray * mutArr;
     if (arr.count!=0) {
         for (AddPatientInfoModel * model in arr) {
-            
             if (model.isSelect == 1) {
-                mutArr = [model.btData componentsSeparatedByString:@","];
-                NSArray * arr = [model.btData componentsSeparatedByString:@","];
-                for (NSString * str in arr) {
-                    allTrainNum += [str intValue];
-                }
-                if ([model.btData isEqualToString:@"(null)"]) {
-                    isTrain = NO;
-                }else{
-                    isTrain = YES;
-                }
-                continue;
+                userId = model.userId ;
             }
-            
         }
     }
-//    allTrainNum/=600;
-    allTrain = allTrainNum/600.0;
-    dataArr = mutArr;
-    //求出数组的最大值
-    int max = 0;
-    for (NSString * str in mutArr) {
-        if (max<[str intValue]) {
-            max = [str intValue];
+    
+    self.AllNumberArr = [[NSMutableArray alloc] init];
+    //获取该用户的实时喷雾数据(50个为一组)
+    NSArray * arr2 = [[SqliteUtils sharedManager] selectHistoryBTInfo];
+    if (arr2.count == 0) {
+        [self.AllNumberArr removeAllObjects];
+        return;
+    }
+    //判断是否为今天的数据
+    UInt64 recordTime = [[NSDate date] timeIntervalSince1970];
+    NSString *time = [NSString stringWithFormat:@"%.llu",recordTime];
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateFormat:@"YYYYMMdd"];
+    NSDate *confromTimesp1 = [NSDate dateWithTimeIntervalSince1970:[time doubleValue]];
+    NSString * confromTimespStr1 = [formatter stringFromDate:confromTimesp1];
+    //当前时间戳
+    long long nowTimeStamp = [DisplayUtils getNowTimestamp];
+    for (BlueToothDataModel * model  in arr2) {
+        //当前读取数据的时间
+        NSDate *confromTimesp2 = [NSDate dateWithTimeIntervalSince1970:[model.timestamp doubleValue]];
+        NSString * confromTimespStr2 = [formatter stringFromDate:confromTimesp2];
+        if (model.userId == userId&&(confromTimespStr1 == confromTimespStr2)) {
+            [self.AllNumberArr addObject:model];
+        }
+        if ([model.timestamp longLongValue] >= (nowTimeStamp-3600)) {
+            pastNum += 1;
         }
     }
-    if (max>100) {
-        max = max/100+1;
-        max*=100;
-    }else if (max>10)
-    {
-        max = max/10+1;
-        max*=10;
-    }else
-    {
-        max = 10;
-    }
-    max = 180;
-    //得出y轴的坐标轴
-     _yNumArr = [NSMutableArray array];
-    for (int i =10; i>=0;i--) {
-        [_yNumArr addObject:[NSString stringWithFormat:@"%d",i*(max/10)]];
-    }
-
 }
 
 -(void)createHeadView
@@ -137,7 +117,7 @@
     
     self.circleView = [[FL_ScaleCircle alloc] initWithFrame:CGRectMake(0, 0, screen_width/2-10, screen_width/2-10)];
     self.circleView.center = CGPointMake(screen_width/2, bgImageView.current_h/2);
-    self.circleView.number = [NSString stringWithFormat:@"%.1fL",allTrain];
+    self.circleView.number = [NSString stringWithFormat:@"%.2fmg",self.AllNumberArr.count*AMOUNT];
     self.circleView.lineWith = 7.0;
     [bgImageView addSubview:self.circleView];
 }
@@ -148,78 +128,17 @@
     footView.backgroundColor = RGBColor(242, 250, 254, 1.0);
     [self.view addSubview:footView];
     
-    circleView = [[UIView alloc] initWithFrame:CGRectMake(10, -50, screen_width-20, screen_height/2-50-tabbarHeight)];
-    circleView.backgroundColor = RGBColor(254, 255, 255, 1.0);
-    circleView.layer.mask = [DisplayUtils cornerRadiusGraph:circleView withSize:CGSizeMake(5, 5)];
-    [footView addSubview:circleView];
+    UILabel *allNumL = [[UILabel alloc] initWithFrame:CGRectMake(10, 70, screen_width-20,40)];
+    allNumL.text = [NSString stringWithFormat:@"NO. of puffs today:   %lu",(unsigned long)self.AllNumberArr.count];
+    allNumL.textColor = RGBColor(8, 86, 184, 1.0);
+    allNumL.font = [UIFont systemFontOfSize:20];
+    [footView addSubview:allNumL];
     
-    //图标题
-    UIImageView *pointImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10, 5, 5, 5)];
-    pointImageView.center = CGPointMake(10, 25);
-    pointImageView.backgroundColor = RGBColor(0, 83, 181, 1.0);
-    pointImageView.layer.mask = [DisplayUtils cornerRadiusGraph:pointImageView withSize:CGSizeMake(pointImageView.current_w/2, pointImageView.current_h/2)];
-    [circleView addSubview:pointImageView];
-    
-    NSString *titleStr = @"The last best inspiration";
-    CGSize size = [DisplayUtils stringWithWidth:titleStr withFont:17];
-    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(pointImageView.current_x_w+10, 5, size.width, 40)];
-    titleLabel.text = titleStr;
-    titleLabel.textColor = RGBColor(8, 86, 184, 1.0);
-    [circleView addSubview:titleLabel];
-    
-    
-    self.chartView = [[FLChartView alloc]initWithFrame:CGRectMake(0, 30, circleView.current_w, circleView.current_h-30)];
-    self.chartView.backgroundColor = [UIColor clearColor];
-    self.chartView.titleOfYStr = @"SLM";
-    self.chartView.titleOfXStr = @"Sec";
-    self.chartView.leftDataArr = dataArr;
-    self.chartView.dataArrOfY = _yNumArr;//拿到Y轴坐标
-    self.chartView.dataArrOfX = @[@"0",@"0.1",@"0.2",@"0.3",@"0.4",@"0.5",@"0.6",@"0.7",@"0.8",@"0.9",@"1.0",@"1.1",@"1.2",@"1.3",@"1.4",@"1.5",@"1.6",@"1.7",@"1.8",@"1.9",@"2.0",@"2.1",@"2.2",@"2.3",@"2.4",@"2.5",@"2.6",@"2.7",@"2.8",@"2.9",@"3.0",@"3.1",@"3.2",@"3.3",@"3.4",@"3.5",@"3.6",@"3.7",@"3.8",@"3.9",@"4.0",@"4.1",@"4.2",@"4.3",@"4.4",@"4.5",@"4.6",@"4.7",@"4.8",@"4.9",@"5.0"];//拿到X轴坐标
-    [circleView addSubview:self.chartView];
-    
-    //单位
-    UILabel *totalLabel = [[UILabel alloc] initWithFrame:CGRectMake(titleLabel.current_x_w, 15, circleView.current_w-titleLabel.current_x_w-10, 35)];
-    totalLabel.textAlignment = NSTextAlignmentRight;
-    totalLabel.textColor = RGBColor(8, 86, 184, 1.0);
-    NSInteger strlength = [NSString stringWithFormat:@"%.1fL",allTrain].length;
-    NSMutableAttributedString *AttributedStr = [[NSMutableAttributedString alloc]initWithString:[NSString stringWithFormat:@"Total:%.1fL",allTrain]];
-    [AttributedStr addAttribute:NSFontAttributeName
-                          value:[UIFont systemFontOfSize:13]
-                          range:NSMakeRange(0, 6)];
-    [AttributedStr addAttribute:NSFontAttributeName
-                          value:[UIFont systemFontOfSize:20]
-                          range:NSMakeRange(6, strlength)];
-    totalLabel.attributedText = AttributedStr;
-    [circleView addSubview:totalLabel];
-    
-    //按钮
-    UIButton *startBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    startBtn.frame = CGRectMake(50, 0, screen_width-100, 40);
-    startBtn.center = CGPointMake(screen_width/2, circleView.current_y_h+(footView.current_h-circleView.current_y_h-tabbarHeight)/2);
-    if (isTrain == NO) {
-        [startBtn setTitle:@"Start Training" forState:UIControlStateNormal];
-    }else{
-        [startBtn setTitle:@"Restart Training" forState:UIControlStateNormal];
-    }
-    [startBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [startBtn setBackgroundColor:RGBColor(16, 101, 182, 1.0)];
-    startBtn.layer.mask = [DisplayUtils cornerRadiusGraph:startBtn withSize:CGSizeMake(startBtn.current_h/2, startBtn.current_h/2)];
-    [startBtn addTarget:self action:@selector(startBtnAction) forControlEvents:UIControlEventTouchUpInside];
-    [footView addSubview:startBtn];
-}
-
-#pragma mark - 点击事件
--(void)startBtnAction
-{
-    NSArray * arr = [[SqliteUtils sharedManager]selectUserInfo];
-    if (arr.count == 0) {
-        
-        [[NSNotificationCenter defaultCenter]postNotificationName:@"gotoLogin" object:nil userInfo:nil];
-        return;
-    }
-    [UserDefaultsUtils saveValue:@[] forKey:@"trainDataArr"];
-    TrainingStartViewController *trainingStartVC = [[TrainingStartViewController alloc] init];
-    [self.navigationController pushViewController:trainingStartVC animated:YES];
+    UILabel *pastNumL = [[UILabel alloc] initWithFrame:CGRectMake(10, 130, screen_width-20,40)];
+    pastNumL.text = [NSString stringWithFormat:@"NO. of puffs in the past 60 min:  %d",pastNum];
+    pastNumL.textColor = RGBColor(8, 86, 184, 1.0);
+    pastNumL.font = [UIFont systemFontOfSize:19];
+    [footView addSubview:pastNumL];
 }
 
 - (void)didReceiveMemoryWarning {

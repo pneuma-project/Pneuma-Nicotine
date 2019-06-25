@@ -375,15 +375,15 @@ typedef enum _TTGState{
                         [formatter setDateFormat:@"YYYY-MM-dd HH:mm:ss"];
                         NSDate *confromTimesp = [NSDate dateWithTimeIntervalSince1970:[timeStamp doubleValue]];
                         NSString *confromTimespStr = [formatter stringFromDate:confromTimesp];
-                        NSArray * historyArr = [[SqliteUtils sharedManager] selectHistoryBTInfo];
-                        if (historyArr.count > 0) {
-                            for (BlueToothDataModel * model in historyArr) {
-                                NSLog(@"<<< %@ >>>", model.timestamp);
-                                if ([timeStamp isEqualToString:model.timestamp]) {
-                                    return;
-                                }
-                            }
-                        }
+//                        NSArray * historyArr = [[SqliteUtils sharedManager] selectHistoryBTInfo];
+//                        if (historyArr.count > 0) {
+//                            for (BlueToothDataModel * model in historyArr) {
+//                                NSLog(@"<<< %@ >>>", model.timestamp);
+//                                if ([timeStamp isEqualToString:model.timestamp]) {
+//                                    return;
+//                                }
+//                            }
+//                        }
                         //插入历史数据表
                         [self insertHistoryDb:@[timeStamp,sprayData,sumData,confromTimespStr,medicineName]];
                     }else if (type == 3){//训练数据

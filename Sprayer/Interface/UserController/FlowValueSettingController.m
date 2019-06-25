@@ -14,6 +14,7 @@
 
 @property (weak, nonatomic) IBOutlet UITextField *k1ValueTF;
 @property (weak, nonatomic) IBOutlet UITextField *k2ValueTF;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *topLabelTop;
 
 @end
 
@@ -24,6 +25,8 @@
     
     self.navigationItem.title = @"Flow value setting";
     self.navigationItem.leftBarButtonItem = [CustemNavItem initWithImage:[UIImage imageNamed:@"icon-back"] andTarget:self andinfoStr:@"left"];
+    
+    _topLabelTop.constant = kSafeAreaTopHeight+10;
     self.k1ValueTF.delegate = self;
     self.k2ValueTF.delegate = self;
     if ([UserDefaultsUtils valueWithKey:@"k1flowValue"] == nil) {

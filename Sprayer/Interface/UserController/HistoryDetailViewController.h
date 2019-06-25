@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "AddPatientInfoModel.h"
 
 @interface HistoryDetailViewController : UIViewController
 @property(nonatomic,strong)NSMutableArray * sprayDataArr;//训练最佳曲线数据
@@ -18,7 +19,10 @@
 @property(nonatomic,assign) int allTotalNum;
 @property(nonatomic,assign) int allTrainTotalNum;
 @property(nonatomic,assign) int lastTrainNum;
-@property(nonatomic,copy) NSString * titles;
+
 @property(nonatomic,copy) NSString * medicineNaStr;
 @property(nonatomic,strong) NSArray * selectDateArr;//当前日期的数据
+
+@property(nonatomic,strong)AddPatientInfoModel * model;
+
 @end

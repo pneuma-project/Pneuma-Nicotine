@@ -13,5 +13,7 @@
 @property (nonatomic,copy)NSString *time;
 @property (nonatomic,copy)NSString *spray;
 @property (nonatomic,copy)NSString *inspiratory;
+@property (nonatomic,assign)float sum;
+@property (nonatomic,assign)NSInteger number;
 
 @end
