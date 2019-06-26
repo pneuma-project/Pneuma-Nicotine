@@ -306,7 +306,7 @@
         NSString * sql = @"select * from historyBTDb";
         FMResultSet * rs = [db executeQuery:sql];
         while ([rs next]) {
-            NSLog(@"查询语句正确");
+//            NSLog(@"查询语句正确");
             BlueToothDataModel * model = [[BlueToothDataModel alloc]init];
             model.userId = [rs intForColumn:@"userid"];
             model.timestamp = [rs stringForColumn:@"nowtime"];

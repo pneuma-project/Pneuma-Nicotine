@@ -111,6 +111,7 @@ typedef enum _TTGState{
             NSData *data = [advertisementData objectForKey:@"kCBAdvDataManufacturerData"];
             if (data == nil) {
                 model.macAddress = @"";
+                return;
             }else {
                 model.macAddress = [FLDrawDataTool hexStringFromData:data];
             }
@@ -154,11 +155,6 @@ typedef enum _TTGState{
 -(void)centralManager:(CBCentralManager *)central didFailToConnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error
 {
     if (_peripheralList.count > 0) {
-        //        for (int i = 0; i < _peripheralList.count; i ++) {
-        //            if (_peripheralList[i] == totalModel) {
-        //                _peripheralList remo
-        //            }
-        //        }
         [_peripheralList removeObject:totalModel];
     }
     totalModel = nil;
@@ -173,11 +169,6 @@ typedef enum _TTGState{
 -(void)centralManager:(CBCentralManager *)central didDisconnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error
 {
     if (_peripheralList.count > 0) {
-//        for (int i = 0; i < _peripheralList.count; i ++) {
-//            if (_peripheralList[i] == totalModel) {
-//                _peripheralList remo
-//            }
-//        }
         [_peripheralList removeObject:totalModel];
     }
     totalModel = nil;
@@ -337,11 +328,11 @@ typedef enum _TTGState{
             case pkt_h:
             {
                 if (newByte[data.length - 1] == 0xab) {
-                    [self.putData appendData:data];
+//                    [self.putData appendData:data];
 //                    NSLog(@"~~~~~%@",self.putData);
-                    Byte *putDataByte = (Byte *)[self.putData bytes];
-                    Byte newbt[self.putData.length-2];
-                    for (NSInteger j = 0; j<self.putData.length - 2; j++) {
+                    Byte *putDataByte = (Byte *)[data bytes];
+                    Byte newbt[data.length-2];
+                    for (NSInteger j = 0; j<data.length - 2; j++) {
                         newbt[j] = putDataByte[j+1];
                     }
                     NSData *newData = [NSData dataWithBytes:newbt
@@ -365,7 +356,6 @@ typedef enum _TTGState{
                         NSArray * historyArr = [[SqliteUtils sharedManager] selectHistoryBTInfo];
                         if (historyArr.count > 0) {
                             for (BlueToothDataModel * model in historyArr) {
-                                NSLog(@"<<< %@ >>>", model.timestamp);
                                 if ([timeStamp isEqualToString:model.timestamp]) {
                                     return;
                                 }
@@ -412,6 +402,14 @@ typedef enum _TTGState{
                         [formatter setDateFormat:@"YYYY-MM-dd HH:mm:ss"];
                         NSDate *confromTimesp2 = [NSDate dateWithTimeIntervalSince1970:[timeStamp doubleValue]];
                         NSString * confromTimespStr2 = [formatter stringFromDate:confromTimesp2];
+                        NSArray * historyArr = [[SqliteUtils sharedManager] selectHistoryBTInfo];
+                        if (historyArr.count > 0) {
+                            for (BlueToothDataModel * model in historyArr) {
+                                if ([timeStamp isEqualToString:model.timestamp]) {
+                                    return;
+                                }
+                            }
+                        }
                         NSString * sql1 = [NSString stringWithFormat:@"insert into historyBTDb(userid,nowtime,btData,sumBtData,date,userName,medicineName) values('%d','%@','%@','%@','%@','%@','%@');",userId,timeStamp,sprayData,sumData,confromTimespStr2,name,medicineName];
                         [[SqliteUtils sharedManager]insertRealBTInfo:sql];
                         [[SqliteUtils sharedManager]insertHistoryBTInfo:sql1];
@@ -420,7 +418,7 @@ typedef enum _TTGState{
                         NSString *medicineInfo = [FLWrapJson getMedicineInfo:[newData subdataWithRange:NSMakeRange(2, 2)] AndDrugInjectionTime:[newData subdataWithRange:NSMakeRange(4, 4)] AndDrugExpirationTime:[newData subdataWithRange:NSMakeRange(8, 4)] AndDrugOpeningTime:[newData subdataWithRange:NSMakeRange(12, 4)] AndVolatilizationTime:[newData subdataWithRange:NSMakeRange(16, 4)]];
                         [[NSNotificationCenter defaultCenter] postNotificationName:@"displayMedicineInfo" object:@{@"medicineInfo":medicineInfo} userInfo:nil];
                     }
-                    _state = etx_e;
+//                    _state = etx_e;
                     self.putData = nil;
                 }else if (newByte[data.length - 1] != 0xab){
                     [self.putData appendData:data];

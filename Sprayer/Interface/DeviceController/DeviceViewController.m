@@ -94,7 +94,6 @@
 -(void)viewDidDisappear:(BOOL)animated
 {
     [super viewDidDisappear:animated];
-    NSLog(@"self = %@",self.timer);
     [self.timer setFireDate:[NSDate distantFuture]];
 }
 

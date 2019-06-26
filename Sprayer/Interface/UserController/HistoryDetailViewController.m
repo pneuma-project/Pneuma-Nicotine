@@ -154,6 +154,7 @@
     
     for (int i =0; i<6; i++) {
         UILabel * upYNumLabel = [[UILabel alloc]initWithFrame:CGRectMake(upYLineLabel.current_x-35,upYLineLabel.current_y+40+i*((upYLineLabel.current_h-40)/6), 30, 12)];
+        upYNumLabel.tag = 60+i;
         upYNumLabel.textColor = RGBColor(204, 205, 206, 1.0);
         upYNumLabel.textAlignment = NSTextAlignmentRight;
         upYNumLabel.text = [NSString stringWithFormat:@"%ld",upSum-i*(upSum/5)];
@@ -407,6 +408,16 @@
     NSArray *totalMonthArr = [model.time componentsSeparatedByString:@"/"];
     upTotalInfoLabel.text = totalMonthArr[0];
     [self.upCollectionView reloadData];
+    
+    NSMutableArray *numberArr = [[NSMutableArray alloc] init];
+    for (HistoryModel *model in self.dataArr) {
+        [numberArr addObject:[NSNumber numberWithInteger:model.number]];
+    }
+    upSum = [[numberArr valueForKeyPath:@"@max.integerValue"] integerValue] + 2;
+    for (int i = 0; i<6; i++) {
+        UILabel *upYNumberL = [upBgView viewWithTag:(60+i)];
+        upYNumberL.text = [NSString stringWithFormat:@"%ld",upSum-i*(upSum/5)];
+    }
 }
 
 #pragma mark ----导航栏点击事件
