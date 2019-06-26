@@ -14,6 +14,7 @@
 #import "AddPatientInfoModel.h"
 #import "UserDefaultsUtils.h"
 #import "BlueToothDataModel.h"
+#import "FLDrawDataTool.h"
 
 @interface TrainingViewController ()
 {
@@ -23,10 +24,14 @@
     
     int userId;//当前用户ID
     int pastNum;  //过去60min次数
+    
+    NSData *timeData;
 }
 
 @property (nonatomic,strong)FL_ScaleCircle *circleView;
 @property(nonatomic,strong)NSMutableArray * AllNumberArr;
+
+@property (nonatomic,strong)NSTimer *timer;
 
 @end
 
@@ -36,6 +41,8 @@
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor whiteColor];
     [self setNavTitle:[DisplayUtils getTimestampData]];
+    self.timer = [NSTimer scheduledTimerWithTimeInterval:2.0f target:self selector:@selector(writeDataAction) userInfo:nil repeats:YES];
+    [self.timer setFireDate:[NSDate distantFuture]];
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -44,6 +51,7 @@
     for (UIView *subview in self.view.subviews) {
         [subview removeFromSuperview];
     }
+    [self.timer setFireDate:[NSDate distantPast]];
     [self selectDataFromDb];
     [self createHeadView];
     [self createFootView];
@@ -51,6 +59,7 @@
     [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"transparent"] forBarMetrics:UIBarMetricsDefault];
     [self.navigationController.navigationBar setShadowImage:[UIImage imageNamed:@"transparent"]];
     self.navigationController.navigationBar.barStyle = UIBarStyleBlackTranslucent;
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshViewAction) name:@"refreshSprayView" object:nil];
 }
 
 -(void)viewWillDisappear:(BOOL)animated
@@ -60,6 +69,7 @@
     self.navigationController.navigationBar.barTintColor = RGBColor(0, 83, 181, 1.0);
     self.navigationController.navigationBar.barStyle = UIBarStyleBlackTranslucent;
     self.navigationController.interactivePopGestureRecognizer.enabled=YES;
+    [self.timer setFireDate:[NSDate distantFuture]];
 }
 
 -(void)selectDataFromDb
@@ -139,6 +149,28 @@
     pastNumL.textColor = RGBColor(8, 86, 184, 1.0);
     pastNumL.font = [UIFont systemFontOfSize:19];
     [footView addSubview:pastNumL];
+}
+
+-(void)refreshViewAction
+{
+    for (UIView *subview in self.view.subviews) {
+        [subview removeFromSuperview];
+    }
+    [self selectDataFromDb];
+    [self createHeadView];
+    [self createFootView];
+}
+
+-(void)writeDataAction
+{
+    //    NSString *time = [DisplayUtils getTimeStampWeek];
+    //    NSString *weakDate = [DisplayUtils getTimestampDataWeek];
+    //    NSMutableString *allStr = [[NSMutableString alloc] initWithString:time];
+    //    [allStr insertString:weakDate atIndex:10];
+    //    timeData = [FLWrapJson bcdCodeString:allStr];
+    long long time = [DisplayUtils getNowTimestamp];
+    timeData = [FLDrawDataTool longToNSData:time];
+    [BlueWriteData sparyData:timeData];
 }
 
 - (void)didReceiveMemoryWarning {
