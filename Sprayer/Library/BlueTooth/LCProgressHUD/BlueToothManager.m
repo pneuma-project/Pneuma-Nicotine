@@ -127,36 +127,7 @@ typedef enum _TTGState{
             [[NSNotificationCenter defaultCenter] postNotificationName:@"scanDevice" object:@{@"DeviceList":_peripheralList} userInfo:nil];
         }
     }
-//    if (peripheral.name != nil) {
-//        Model * model = [[Model alloc]init];
-//        model.peripheral = peripheral;
-//        model.num = [RSSI intValue];
-//        //如果 外设数组数量为0 则 直接将 该 model 添加到 外设数组中
-//        //如果 外设数组数量不为0 则 用遍历数组 用外设的名称 进行判断 是否 存在于该数组中
-//        //如果 外设名称相同  则 只修改 该外设 所对应的 rssi
-//        //如果 外设名称不同  则 将此外设 加入到外设数组中
-//        if (_peripheralList.count == 0 && ([peripheral.name isEqualToString:@"nRF52832"])) {
-//            [self connectPeripheralWith:peripheral];
-//            [_peripheralList addObject:model];
-//            //[[NSNotificationCenter defaultCenter] postNotificationName:@"scanDevice" object:nil userInfo:nil];
-//        }else{
-//            BOOL ishave = NO;
-//            for (Model * mo in _peripheralList) {
-//                if ([mo.peripheral.name isEqualToString:model.peripheral.name]) {
-//                    mo.num = model.num;
-//                    ishave = YES;
-//                    break;
-//                }else{
-//
-//                }
-//            }
-//            //判断名称是否是设备的默认名称
-//            if (ishave == NO && ([peripheral.name isEqualToString:@"nRF52832"])) {
-//                [_peripheralList addObject:model];
-//                //[NSTimer scheduledTimerWithTimeInterval:0.5f target:self selector:@selector(scanDeivceAction) userInfo:nil repeats:YES];
-//            }
-//        }
-//    }
+
 }
 
 //-(void)scanDeivceAction
@@ -182,6 +153,14 @@ typedef enum _TTGState{
 //连接设备失败
 -(void)centralManager:(CBCentralManager *)central didFailToConnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error
 {
+    if (_peripheralList.count > 0) {
+        //        for (int i = 0; i < _peripheralList.count; i ++) {
+        //            if (_peripheralList[i] == totalModel) {
+        //                _peripheralList remo
+        //            }
+        //        }
+        [_peripheralList removeObject:totalModel];
+    }
     totalModel = nil;
     [LCProgressHUD showFailureText:NSLocalizedString(@"Connection failed", nil)];
     isLinked = NO;
@@ -193,13 +172,21 @@ typedef enum _TTGState{
 //设备断开连接
 -(void)centralManager:(CBCentralManager *)central didDisconnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error
 {
+    if (_peripheralList.count > 0) {
+//        for (int i = 0; i < _peripheralList.count; i ++) {
+//            if (_peripheralList[i] == totalModel) {
+//                _peripheralList remo
+//            }
+//        }
+        [_peripheralList removeObject:totalModel];
+    }
     totalModel = nil;
     isLinked = NO;
     [LCProgressHUD showFailureText:NSLocalizedString(@"Peripheral disconnect", nil)];
     NSLog(@">>>外设连接断开连接 %@: %@\n", [peripheral name], [error localizedDescription]);
     [[NSNotificationCenter defaultCenter] postNotificationName:PeripheralDidConnect object:nil userInfo:nil];
     [UserDefaultsUtils saveBoolValue:NO withKey:@"isConnect"];
-    self.timer = [NSTimer scheduledTimerWithTimeInterval:1.0f target:self selector:@selector(autoConnectAction) userInfo:nil repeats:YES];
+//    self.timer = [NSTimer scheduledTimerWithTimeInterval:1.0f target:self selector:@selector(autoConnectAction) userInfo:nil repeats:YES];
 }
 
 //自动连接通知
@@ -375,15 +362,15 @@ typedef enum _TTGState{
                         [formatter setDateFormat:@"YYYY-MM-dd HH:mm:ss"];
                         NSDate *confromTimesp = [NSDate dateWithTimeIntervalSince1970:[timeStamp doubleValue]];
                         NSString *confromTimespStr = [formatter stringFromDate:confromTimesp];
-//                        NSArray * historyArr = [[SqliteUtils sharedManager] selectHistoryBTInfo];
-//                        if (historyArr.count > 0) {
-//                            for (BlueToothDataModel * model in historyArr) {
-//                                NSLog(@"<<< %@ >>>", model.timestamp);
-//                                if ([timeStamp isEqualToString:model.timestamp]) {
-//                                    return;
-//                                }
-//                            }
-//                        }
+                        NSArray * historyArr = [[SqliteUtils sharedManager] selectHistoryBTInfo];
+                        if (historyArr.count > 0) {
+                            for (BlueToothDataModel * model in historyArr) {
+                                NSLog(@"<<< %@ >>>", model.timestamp);
+                                if ([timeStamp isEqualToString:model.timestamp]) {
+                                    return;
+                                }
+                            }
+                        }
                         //插入历史数据表
                         [self insertHistoryDb:@[timeStamp,sprayData,sumData,confromTimespStr,medicineName]];
                     }else if (type == 3){//训练数据

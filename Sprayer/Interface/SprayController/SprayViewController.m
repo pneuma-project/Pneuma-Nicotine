@@ -105,6 +105,9 @@
 
 -(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"UICollectionViewCell" forIndexPath:indexPath];
+    for (UIView *view in cell.contentView.subviews) {
+        [view removeFromSuperview];
+    }
     UIView *view = [[UIView alloc] initWithFrame:CGRectZero];
     view.backgroundColor = RGBColor(10, 77, 170, 1);
     UILabel *numL = [[UILabel alloc] initWithFrame:CGRectZero];
@@ -371,7 +374,7 @@
     _medicineNameL = [[UILabel alloc] initWithFrame:CGRectMake(currentLabel.current_x, currentLabel.current_y_h, 100, 12)];
     _medicineNameL.font = [UIFont systemFontOfSize:12];
     _medicineNameL.textColor = RGBColor(0, 64, 181, 1.0);
-    _medicineNameL.text = medicineName;
+//    _medicineNameL.text = medicineName;
     
     UILabel * trainLabel = [[UILabel alloc]initWithFrame:CGRectMake(_upBgView.current_w-55, 10, 55, strSize.height)];
     trainLabel.text = @"Training";
@@ -553,9 +556,9 @@
     //展示药品信息
     NSArray * arr2 = [[SqliteUtils sharedManager] selectHistoryBTInfo];
     if (arr2.count != 0) {
-        BlueToothDataModel * totalModel = arr2[index];
-        NSString *medicineN = totalModel.medicineName;
-        _medicineNameL.text = medicineN;
+//        BlueToothDataModel * totalModel = arr2[index];
+//        NSString *medicineN = totalModel.medicineName;
+//        _medicineNameL.text = medicineN;
     }
     if (_numberArr.count != 0) {
         int trainNum = 0;
