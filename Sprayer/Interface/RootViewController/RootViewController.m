@@ -68,7 +68,7 @@
         _tabbarController=[[UITabBarController alloc]init];
         NSArray *imageNameArr1=@[@"device-home-2",@"device-training-2",@"device-Shape-2",@"device-user-2"];
         NSArray *imageNameArr2=@[@"device-home-1",@"device-training-1",@"device-Shape-1",@"device-user-1"];
-        NSArray *nameArr=@[@"Device",@"Training",@"Spray",@"User"];
+        NSArray *nameArr=@[@"Device",@"Puffs",@"Spray",@"User"];
         DeviceViewController *deviceVC=[[DeviceViewController alloc]init];
         TrainingViewController *trainVC=[[TrainingViewController alloc]init];
         SprayViewController *sprayVC=[[SprayViewController alloc]init];
