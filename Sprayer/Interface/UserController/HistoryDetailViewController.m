@@ -521,7 +521,7 @@
         }
     }
     
-    NSArray *timeStrArr = [timeArr2[0] componentsSeparatedByString:@"/"];
+    NSArray *timeStrArr = [timeArr2.lastObject componentsSeparatedByString:@"/"];
     for (NSInteger j = 0; j < timeArr2.count; j++) {
         NSArray *totalTimeStrArr = [timeArr2[j] componentsSeparatedByString:@"/"];
         if ([totalTimeStrArr[0] isEqualToString:timeStrArr[0]]) {
