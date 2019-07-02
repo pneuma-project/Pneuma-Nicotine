@@ -466,7 +466,7 @@
     for (BlueToothDataModel * model in dataArr) {
         [userTimeArr addObject:model.timestamp];
     }
-    return @[userTimeArr];
+    return userTimeArr;
 }
 
 -(void)requestData
@@ -478,7 +478,7 @@
     }
     NSMutableArray *timeArr1 = [NSMutableArray array];
     //将时间戳转为应用缩写
-    for (NSString * timeStr in dataArr[0]) {
+    for (NSString * timeStr in dataArr) {
         NSTimeInterval time=[timeStr doubleValue];
         NSDate *detaildate=[NSDate dateWithTimeIntervalSince1970:time];
         //实例化一个NSDateFormatter对象
@@ -494,30 +494,28 @@
     }
     //原始时间
     NSMutableArray * timeArr3 = [NSMutableArray array];
-    NSArray * originalTimeArr = dataArr[0];
-    [timeArr3 addObject:originalTimeArr[0]];
+    NSString * originalTimeStr = dataArr[0];
+    [timeArr3 addObject:originalTimeStr];
     
     //将数据按天数分类
     timeArr2 = [NSMutableArray array];
-    spraysArr = [NSMutableArray array];
-    int index = 0;
-    
     NSString * dateStr = timeArr1[0];
     [timeArr2 addObject:dateStr];
+    
+    spraysArr = [NSMutableArray array];
+    int index = 0;
     for (int i = 0; i<timeArr1.count; i++) {
-        if (i==timeArr1.count - 1) {
-            index ++;
-            [spraysArr addObject:[NSString stringWithFormat:@"%d",index]];
-            continue;
-        }
         if ([dateStr isEqualToString:timeArr1[i]] ) {
             index ++;
         }else{
             dateStr = timeArr1[i];
             [timeArr2 addObject:timeArr1[i]];
-            [timeArr3 addObject:originalTimeArr[i]];
+            [timeArr3 addObject:dataArr[i]];
             [spraysArr addObject:[NSString stringWithFormat:@"%d",index]];
             index  = 1;
+        }
+        if (i==timeArr1.count - 1) {
+            [spraysArr addObject:[NSString stringWithFormat:@"%d",index]];
         }
     }
     
@@ -549,12 +547,7 @@
     }
     NSString * monthStr = monthTimeArr1[0];
     [monthTimeArr2 addObject:monthStr];
-    for (int i = 0; i < timeArr2.count; i++) {
-        if (i==timeArr2.count - 1) {
-            index1 += [spraysArr[i] integerValue];
-            [monthSpraysArr addObject:[NSString stringWithFormat:@"%ld",(long)index1]];
-            continue;
-        }
+    for (int i = 0; i < monthTimeArr1.count; i++) {
         if ([monthStr isEqualToString:monthTimeArr1[i]]) {
             index1 += [spraysArr[i] integerValue];
         }else{
@@ -562,6 +555,9 @@
             [monthTimeArr2 addObject:monthTimeArr1[i]];
             [monthSpraysArr addObject:[NSString stringWithFormat:@"%ld",(long)index1]];
             index1 = [spraysArr[i] integerValue];
+        }
+        if (i==monthTimeArr1.count - 1) {
+            [monthSpraysArr addObject:[NSString stringWithFormat:@"%ld",(long)index1]];
         }
     }
     for (NSInteger j = 0; j < monthTimeArr2.count; j++) {
