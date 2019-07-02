@@ -417,6 +417,8 @@ typedef enum _TTGState{
                     }else if (type == 5) { //
                         NSString *medicineInfo = [FLWrapJson getMedicineInfo:[newData subdataWithRange:NSMakeRange(2, 2)] AndDrugInjectionTime:[newData subdataWithRange:NSMakeRange(4, 4)] AndDrugExpirationTime:[newData subdataWithRange:NSMakeRange(8, 4)] AndDrugOpeningTime:[newData subdataWithRange:NSMakeRange(12, 4)] AndVolatilizationTime:[newData subdataWithRange:NSMakeRange(16, 4)]];
                         [[NSNotificationCenter defaultCenter] postNotificationName:@"displayMedicineInfo" object:@{@"medicineInfo":medicineInfo} userInfo:nil];
+                    }else if (type == 10) {
+                        
                     }
 //                    _state = etx_e;
                     self.putData = nil;
