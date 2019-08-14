@@ -228,7 +228,7 @@
     }else if (type == 3) {
         return [NSString stringWithFormat: @"Drug: Albuterol sulfate\nDose: 108 mcg (equivalent to 90 mcg albuterol base)\nLot #:  231-148-323\nFill date: %@\nExpiration date: %@\nData of first use: %@\nTotal evaporation time: %lds",confromTimespStr1,confromTimespStr2,confromTimespStr3,(long)volatilizationTime];
     }else if (type == 4) {
-        return [NSString stringWithFormat: @"Drug: T    iotropium bromide\nDose: 2.5 mcg\nLot #: 232-147-114\nFill date: %@\nExpiration date: %@\nData of first use: %@\nTotal evaporation time: %lds",confromTimespStr1,confromTimespStr2,confromTimespStr3,(long)volatilizationTime];
+        return [NSString stringWithFormat: @"Drug: Tiotropium bromide\nDose: 2.5 mcg\nLot #: 232-147-114\nFill date: %@\nExpiration date: %@\nData of first use: %@\nTotal evaporation time: %lds",confromTimespStr1,confromTimespStr2,confromTimespStr3,(long)volatilizationTime];
     }else if (type == 5 || type == 0) {  //无药瓶
         return @"No cartridge";
     }
