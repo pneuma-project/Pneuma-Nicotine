@@ -227,6 +227,7 @@ typedef enum _TTGState{
         CBUUID *readWriteUUID = [CBUUID UUIDWithString:kReadWriteUUID];
         if ([service.UUID isEqual:serviceUUID]) {
             for (CBCharacteristic *characteristic in service.characteristics) {
+                //设置通知
                 if ([characteristic.UUID isEqual:notifyUUID]) {
                     [peripheral setNotifyValue:YES forCharacteristic:characteristic];
                 }
@@ -284,6 +285,7 @@ typedef enum _TTGState{
     if (_char == nil) {
         return;
     }
+    //蓝牙写数据
     [_per writeValue:data forCharacteristic:_char type:CBCharacteristicWriteWithoutResponse];
 
 }
