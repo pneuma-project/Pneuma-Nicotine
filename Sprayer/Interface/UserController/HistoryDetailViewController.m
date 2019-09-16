@@ -150,7 +150,11 @@
     for (HistoryModel *model in self.dataArr) {
         [numberArr addObject:[NSNumber numberWithInteger:model.number]];
     }
-    upSum = [[numberArr valueForKeyPath:@"@max.integerValue"] integerValue] + 2;
+    if ([[numberArr valueForKeyPath:@"@max.integerValue"] integerValue] <= 4) {
+        upSum = 6;
+    }else {
+        upSum = [[numberArr valueForKeyPath:@"@max.integerValue"] integerValue] + 2;
+    }
     
     for (int i =0; i<6; i++) {
         UILabel * upYNumLabel = [[UILabel alloc]initWithFrame:CGRectMake(upYLineLabel.current_x-35,upYLineLabel.current_y+40+i*((upYLineLabel.current_h-40)/6), 30, 12)];
@@ -221,7 +225,11 @@
     for (HistoryModel *model in self.monthDataArr) {
         [monthNumberArr addObject:[NSNumber numberWithInteger:model.number]];
     }
-    sum = [[monthNumberArr valueForKeyPath:@"@max.integerValue"] integerValue];
+    if ([[monthNumberArr valueForKeyPath:@"@max.integerValue"] integerValue] <= 4) {
+        sum = 6;
+    }else {
+        sum = [[monthNumberArr valueForKeyPath:@"@max.integerValue"] integerValue] + 2;
+    }
     for (int i =0; i<6; i++) {
         UILabel * yNumLabel = [[UILabel alloc]initWithFrame:CGRectMake(yLineLabel.current_x-35,yLineLabel.current_y+40+i*((yLineLabel.current_h-40)/6), 30, 12)];
         yNumLabel.textColor = RGBColor(204, 205, 206, 1.0);
