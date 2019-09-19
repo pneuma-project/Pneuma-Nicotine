@@ -53,10 +53,14 @@
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    //搜索蓝牙设备通知
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(searchDeviceAction:) name:@"scanDevice" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(bleConnectSucceedAction) name:ConnectSucceed object:nil]; //设备连接成功扫描到特征值
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(disconnectAction) name:PeripheralDidConnect object:nil];//设备断开连接
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(displayMedicineInfoAction:) name:@"displayMedicineInfo" object:nil]; //展示药品信息
+    //设备连接成功扫描到特征值
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(bleConnectSucceedAction) name:ConnectSucceed object:nil];
+    //设备断开连接
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(disconnectAction) name:PeripheralDidConnect object:nil];
+    //展示药品信息
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(displayMedicineInfoAction:) name:@"displayMedicineInfo" object:nil];
 
     if ([UserDefaultsUtils boolValueWithKey:@"isConnect"] == YES) {
         [self.timer setFireDate:[NSDate distantPast]];
@@ -87,7 +91,9 @@
     [self noUserAlert];
     
     //接收通知
+    //开始训练通知
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(stopNSTimerAction) name:@"startTrain" object:nil];
+    //实时喷雾模式通知
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(stopNSTimerAction) name:@"sparyModel" object:nil];
 }
 
