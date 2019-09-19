@@ -59,6 +59,7 @@
     [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"transparent"] forBarMetrics:UIBarMetricsDefault];
     [self.navigationController.navigationBar setShadowImage:[UIImage imageNamed:@"transparent"]];
     self.navigationController.navigationBar.barStyle = UIBarStyleBlackTranslucent;
+    //接收到实时喷雾数据刷新界面通知
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshViewAction) name:@"refreshSprayView" object:nil];
 }
 
